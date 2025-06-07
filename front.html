@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>RemindMED</title>
+  <style>
+    body { font-family: 'Prompt', sans-serif; max-width: 500px; margin: auto; padding: 2em; }
+    input, button { width: 100%; margin: 10px 0; padding: 0.5em; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h2 style="font-size: 32px;">Configure a hora desejada</h2>
+
+  <label for="releaseTime"> Em qual horário você deseja receber seus remédios? </label>
+  <input type="time" id="releaseTime">
+
+  <label for="alarm1"> E quando quer que eu te lembre do primeiro? </label>
+  <input type="time" id="alarm1">
+
+  <label for="alarm2"> E do segundo? </label>
+  <input type="time" id="alarm2">
+
+  <label for="alarm3"> E do terceiro? </label>
+  <input type="time" id="alarm3">
+
+  <label for="espIp">ESP32 IP Address:</label>
+  <input type="text" id="espIp" placeholder="e.g. 192.168.4.1">
+
+  <button onclick="sendConfig()"> Salvar </button>
+
+  <script>
+    function sendConfig() {
+      const releaseTime = document.getElementById('releaseTime').value;
+      const alarm1 = document.getElementById('alarm1').value;
+      const alarm2 = document.getElementById('alarm2').value;
+      const alarm3 = document.getElementById('alarm3').value;
+      const espIp = document.getElementById('espIp').value;
+
+      const config = {
+        releaseTime,
+        alarms: [alarm1, alarm2, alarm3]
+      };
+
+      fetch(`http://${espIp}/config`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(config)
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to send');
+        return response.text();
+      })
+      .then(data => alert('Configuration sent successfully!'))
+      .catch(error => alert('Error: ' + error.message));
+    }
+  </script>
+</body>
+</html>
