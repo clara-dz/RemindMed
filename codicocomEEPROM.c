@@ -2,20 +2,21 @@
 #include <RTClib.h>
 #include <LiquidCrystal_I2C.h>
 #include <Stepper.h>
+#include <EEPROM.h> // <--- added
 
 RTC_DS3231 rtc;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Stepper motor setup
 const int stepsPerRevolution = 2048;
-Stepper stepper(stepsPerRevolution, 8, 10, 9, 11); // 28BYJ-48 + ULN2003
+Stepper stepper(stepsPerRevolution, 13, 12, 11, 10); // 28BYJ-48 + ULN2003
 
 // Pins
-const int buzzerPin = 7;     // Buzzer on pin 7
-const int blueLed = 6;       // Blue LED now on pin 6
-const int yellowButton = 2;  // Yellow button (hour)
+const int buzzerPin = 6;     // Buzzer on pin 6
+const int blueLed = 7;       // Blue LED now on pin 7
+const int yellowButton = 4;  // Yellow button (hour)
 const int greenButton = 3;   // Green button (minute)
-const int blueButton = 13;   // Blue button (set)
+const int blueButton = 2;   // Blue button (set)
 
 int setHour = 0;
 int setMinute = 0;
@@ -41,6 +42,10 @@ void setup() {
     while (1);
   }
 
+  // Load saved values from EEPROM
+  setHour = EEPROM.read(0);
+  setMinute = EEPROM.read(1);
+
   stepper.setSpeed(15); // RPM
   lcd.clear();
 }
@@ -64,8 +69,11 @@ void displaySetTime() {
 void loop() {
   DateTime now = rtc.now();
 
-  // Confirm set time
+  // Confirm set time and save to EEPROM
   if (digitalRead(blueButton) == LOW) {
+    EEPROM.write(0, setHour);
+    EEPROM.write(1, setMinute);
+
     lcd.clear();
     lcd.print("Horario para");
     lcd.setCursor(0, 1);
@@ -106,4 +114,3 @@ void loop() {
 
   delay(1000);
 }
-
