@@ -1,1 +1,1 @@
-#RemindMed
+#RemindMed is a smart pill dispenser project built using Arduino UNO. This repository contains all the necessary code to control the components responsible for scheduling, dispensing, and reminding users to take their medication.
